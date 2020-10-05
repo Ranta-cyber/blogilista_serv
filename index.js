@@ -14,19 +14,19 @@ const server = http.createServer(app)
 //})
 
 //server.listen(3003, () => {
- // console.log(`Server running on port 3003`)
+//  console.log('Server running on port 3003')
 //})
 
 const blogSchema = mongoose.Schema({
-  title: String,
   author: String,
+  title: String,
   url: String,
-  likes: Number
+  votes: Number
 })
 
-const Blog = mongoose.model('Blog', blogSchema)
-
-const mongoUrl = "mongodb+srv://meridata:<Salsa100>@cluster0.cuzh1.mongodb.net/<app_persons>?retryWrites=true&w=majority"
+const Blog = mongoose.model('blogs', blogSchema)
+//MONGODB_URI=mongodb+srv://meridata:Salsa100@cluster0.cuzh1.mongodb.net/app_persons?retryWrites=true&w=majority
+const mongoUrl = "mongodb+srv://meridata:Salsa100@cluster0.cuzh1.mongodb.net/app_persons?retryWrites=true&w=majority"
 //const mongoUrl = 'mongodb://localhost/bloglist'
 mongoose.connect(mongoUrl, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false, useCreateIndex: true })
 
@@ -43,7 +43,7 @@ app.get('/api/blogs', (request, response) => {
 
 app.post('/api/blogs', (request, response) => {
   const blog = new Blog(request.body)
-
+  console.log('blog is:',blog)
   blog
     .save()
     .then(result => {
@@ -53,5 +53,5 @@ app.post('/api/blogs', (request, response) => {
 
 const PORT = 3003
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`)
+  console.log(`App listening at port ${PORT}`)
 })
