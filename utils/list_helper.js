@@ -1,3 +1,5 @@
+const Blog = require('../models/blog')
+
 const dummy = (blogs) => {
   return 1
 }
@@ -7,7 +9,7 @@ const totalLikes = array => {
     return sum + array.likes
   }
   return array.length === 0
-    ? 0 
+    ? 0
     : array.reduce(reducer,0) // total likes
 }
 
@@ -20,9 +22,23 @@ const favoriteBlog = array => {
     : array.reduce(reducer,0) // eniten likes
 }
  
+const nonExistingId = async () => {
+  const note = new Blog({ content: 'willremovethissoon', date: new Date() })
+  await note.save()
+  await note.remove()
+
+  return note._id.toString()
+}
+
+const notesInDb = async () => {
+  const notes = await Blog.find({})
+  return notes.map(note => note.toJSON())
+}
 
 module.exports = {
   dummy,
   totalLikes,
-  favoriteBlog
+  favoriteBlog,
+  nonExistingId,
+  notesInDb
 }
