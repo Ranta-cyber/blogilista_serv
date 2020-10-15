@@ -1,5 +1,5 @@
 const listHelper = require('../utils/list_helper')
-const bodyParser = require('body-parser');
+const bodyParser = require('body-parser')
 const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')

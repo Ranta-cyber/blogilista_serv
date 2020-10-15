@@ -1,17 +1,18 @@
 
 const blogsRouter = require('express').Router()
 const Blog = require('../models/blog')
+const User = require('../models/user')
 
-blogsRouter.get('/', (request, response) => {
-  Blog
-    .find({})
-    .then(blogs => {
-      response.json(blogs)
-    })
+blogsRouter.get('/', async (request, response) => {
+  
+  const blogs = await Blog.find({}).populate('user', { username: 1, name: 1 })
+  response.json(blogs.map(blog => blog.toJSON()))
 })
 
-blogsRouter.post('/', (request, response) => {
+blogsRouter.post('/', async (request, response) => {
   const blog = new Blog(request.body)
+  //console.log('body:',request.body)
+
   if (blog.votes === null) {
     blog.votes = 0
   }
@@ -19,11 +20,17 @@ blogsRouter.post('/', (request, response) => {
     response.status(400).end()
     return
   }
-  blog
-    .save()
-    .then(result => {
-      response.status(201).json(result)
-    })
+
+  const user = await User.findById(request.body.userId)
+  //console.log('user:', user)
+  blog.user = user._id
+
+  //console.log('blog.user:',blog)
+
+  const savedBlog = await blog.save()
+  user.blogs = user.blogs.concat(savedBlog._id)
+  await user.save()
+  response.json(savedBlog.toJSON())
 })
 
 blogsRouter.delete('/:id', async (request, response) => {
@@ -34,6 +41,8 @@ blogsRouter.delete('/:id', async (request, response) => {
 blogsRouter.put('/api/blogs/:id', async (request, response, next) => {
   const body = request.body
 
+  
+
   const blogi = {
     author: body.author,
     title: body.title,
@@ -42,7 +51,7 @@ blogsRouter.put('/api/blogs/:id', async (request, response, next) => {
   }
 
   const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, blogi, { new: true })
-      response.json(updatedBlog.toJSON()
+  response.json(updatedBlog.toJSON())
 })
 
 module.exports = blogsRouter
