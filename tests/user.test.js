@@ -32,6 +32,14 @@ describe('when there is initially one user at db', () => {
     }
 
     const response = await api.post('/api/users')
+    const decodedToken = jwt.verify(request.token, process.env.SECRET)
+  //const decodedToken = jwt.verify(token, process.env.SECRET)
+  //console.log('decodetoken:', decodedToken)
+  if (!request.token || !decodedToken.id) {
+    return response.status(401).json({ error: 'token missing or invalid' })
+  }
+
+    .set('Authorization', decodedToken)
       .send(newUser)
     expect(response.statusCode).toBe(200)
     //expect('Content-Type', /application\/json/)
@@ -55,6 +63,14 @@ test('creation fails with proper statuscode and message if username already take
 
   const result = await api
     .post('/api/users')
+    const decodedToken = jwt.verify(request.token, process.env.SECRET)
+  //const decodedToken = jwt.verify(token, process.env.SECRET)
+  //console.log('decodetoken:', decodedToken)
+  if (!request.token || !decodedToken.id) {
+    return response.status(401).json({ error: 'token missing or invalid' })
+  }
+
+    .set('Authorization', decodedToken)
     .send(newUser)
     .expect(400)
     .expect('Content-Type', /application\/json/)
