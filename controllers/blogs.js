@@ -18,7 +18,7 @@ blogsRouter.post('/', async (request, response) => {
   
   const decodedToken = jwt.verify(request.token, process.env.SECRET)
   //console.log('body:',request.body)
-
+  console.log('token:',request.token)
   if (blog.votes === null) {
     blog.votes = 0
   }

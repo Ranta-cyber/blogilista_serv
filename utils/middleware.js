@@ -12,12 +12,15 @@ const tokenExtractor = (request, response, next) => {
   // tokenin ekstraktoiva koodi
   const getTokenFrom = request => {
     const authorization = request.get('authorization')
+    
     if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
       return authorization.substring(7)
     }
     return null
   }
-  request.token = getTokenFrom
+  console.log('authorization:', request.get('authorization'))
+  request.token = getTokenFrom(request)
+  console.log('request token in middleware:', request.token)
   next()
 }
 
