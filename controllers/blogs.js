@@ -1,5 +1,6 @@
 
 const jwt = require('jsonwebtoken')
+const blog = require('../models/blog')
 
 const blogsRouter = require('express').Router()
 const Blog = require('../models/blog')
@@ -13,10 +14,10 @@ blogsRouter.get('/', async (request, response) => {
 
 blogsRouter.post('/', async (request, response) => {
   const blog = new Blog(request.body)
-
+  console.log('POST:SSA')
   const decodedToken = jwt.verify(request.token, process.env.SECRET)
   //console.log('body:',request.body)
-  console.log('token:',request.token)
+  console.log('token:', request.token)
   if (blog.votes === null) {
     blog.votes = 0
   }
@@ -46,7 +47,7 @@ blogsRouter.delete('/:id', async (request, response) => {
   response.status(204).end()
 })
 
-blogsRouter.put('/:id', async (request, response, next) => {
+blogsRouter.put('/:id', async (request, response) => {
   const body = request.body
 
   const decodedToken = jwt.verify(request.token, process.env.SECRET)
@@ -62,6 +63,22 @@ blogsRouter.put('/:id', async (request, response, next) => {
 
   const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, blogi, { new: true })
   response.json(updatedBlog.toJSON())
+})
+
+// commenttien päivitys
+blogsRouter.post('/:id/comments', async (request, response) => {
+  const comment = request.body.comments
+  const blog = await Blog.findById(request.params.id)
+
+  if (request.body.comment === null) {
+    response.status(400).end()
+    return
+  }
+
+  blog.comments = [...blog.comments, comment]
+  const savedBlog = await blog.save()
+
+  response.json(savedBlog.toJSON())
 })
 
 module.exports = blogsRouter
